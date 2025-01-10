@@ -1,4 +1,5 @@
-data "aws_iam_policy_document" "assume_role" {
+data "aws_iam_policy_document" "assume_role" {     #role to cluster assume role
+
   statement {
     effect = "Allow"
 
@@ -11,7 +12,7 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 
-data "aws_iam_policy_document" "assume_node_role" {
+data "aws_iam_policy_document" "assume_node_role" {       # role to node group assume role
   statement {
     effect = "Allow"
 
@@ -24,10 +25,12 @@ data "aws_iam_policy_document" "assume_node_role" {
   }
 }
 
-resource "aws_iam_role" "example" {
+resource "aws_iam_role" "example" {         #cluster role
   name               = "eks-cluster-example"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
+
+
 
 resource "aws_iam_role_policy_attachment" "example-AmazonEKSClusterPolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
@@ -36,16 +39,14 @@ resource "aws_iam_role_policy_attachment" "example-AmazonEKSClusterPolicy" {
 
 # Optionally, enable Security Groups for Pods
 # Reference: https://docs.aws.amazon.com/eks/latest/userguide/security-groups-for-pods.html
+
+#this policy attached to the IAM role of cluster.
+#to manage network interfaces, their private IP addresses, and their attachment and detachment to and from network instances. 
 resource "aws_iam_role_policy_attachment" "example-AmazonEKSVPCResourceController" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
   role       = aws_iam_role.example.name
 }
-
-resource "aws_iam_role" "worker" {
-  name               = "eks-node-role"
-  assume_role_policy = data.aws_iam_policy_document.assume_node_role.json
-}
-
+#3 policies added to the node-role
 resource "aws_iam_role_policy_attachment" "AmazonEKSWorkerNodePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = aws_iam_role.worker.name
