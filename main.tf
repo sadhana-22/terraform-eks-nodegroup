@@ -39,6 +39,11 @@ resource "aws_eks_node_group" "node-grp" {
   instance_types  = ["t2.micro"]
   labels = tomap({ env = "dev" })
 
+# ✅ Add SSH access using the key pair
+  remote_access {
+    ec2_ssh_key = "my-eks-key"  # Replace with your actual key pair name from AWS
+  }
+
   scaling_config {
     desired_size = 2
     max_size     = 3
