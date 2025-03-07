@@ -28,9 +28,12 @@ data "aws_iam_policy_document" "assume_node_role" {       # role to node group a
 resource "aws_iam_role" "example" {         #cluster role
   name               = "eks-cluster-example"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
+
 }
-
-
+resource "aws_iam_role" "worker" {
+  name               = "eks-worker-role"
+  assume_role_policy = data.aws_iam_policy_document.assume_node_role.json
+}
 
 resource "aws_iam_role_policy_attachment" "example-AmazonEKSClusterPolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
